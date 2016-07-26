@@ -21,8 +21,8 @@ public class StringUtils {
                 res.append(delimiter);
             }
         }
-        if (res.charAt(res.length()) == delimiter)
-            res.deleteCharAt(res.length());
+        if (res.charAt(res.length()-1) == delimiter)
+            res.deleteCharAt(res.length()-1);
         return res.toString();
     }
 

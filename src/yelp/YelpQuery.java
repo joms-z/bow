@@ -19,4 +19,18 @@ public class YelpQuery {
     public String getLocation() {
         return location;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if(getClass() != obj.getClass()) return false;
+        YelpQuery other = (YelpQuery) obj;
+        return (this.name.equals(other.getName()) && this.location.equals(other.getLocation()));
+    }
+
+    @Override
+    public int hashCode() {
+        return (this.name+this.location).hashCode();
+    }
 }

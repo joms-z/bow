@@ -62,6 +62,8 @@ public class YelpManager {
                 "yelp_categories FROM smartfin.YelpCache2 WHERE query_name IN (" + inClauseNames +
                 ") AND query_location IN (" + inClauseLocations + ");";
 
+        System.out.println(loadCacheQuery);
+
         Connection conn = new DBService(yelpCacheDbUserName, yelpCacheDbPassword, yelpCacheDbUrl, yelpCacheDatabase,
                 yelpCacheDriver).getConnection();
         Statement s = null;
@@ -151,7 +153,7 @@ public class YelpManager {
         partialLoadYelpCache(yelpQueries);
         for (YelpQuery yelpQuery : yelpQueries) {
             YelpResult yelpResult = getYelpResult(yelpQuery);
-            if (verifyYelpResult(yelpQuery, yelpResult))
+            if (yelpResult != null && (verifyYelpResult(yelpQuery, yelpResult)))
                 yelpResults.add(yelpResult);
             else
                 yelpResults.add(null);
@@ -177,13 +179,23 @@ public class YelpManager {
             s  = conn.prepareStatement("INSERT INTO YelpCache2 (query_name, query_location, " +
                     "yelp_name, yelp_address, yelp_city, yelp_state, yelp_categories) VALUES (?,?,?, ?, ?, ?, ?)");
             for (YelpQueryResult yqr : yelpQueryResultSetToAddToDb) {
+                String name="", address="", city="", state="";
+                List<String> categories=null;
+                YelpResult yr = yqr.getYelpResult();
+                if (yr != null) {
+                    name = yr.getName();
+                    address = yr.getAddress();
+                    city = yr.getCity();
+                    state = yr.getState();
+                    categories = yr.getCategories();
+                }
                 s.setString(1, yqr.getYelpQuery().getName());
                 s.setString(2, yqr.getYelpQuery().getLocation());
-                s.setString(3, yqr.getYelpResult().getName());
-                s.setString(4, yqr.getYelpResult().getAddress());
-                s.setString(5, yqr.getYelpResult().getCity());
-                s.setString(6, yqr.getYelpResult().getState());
-                s.setString(7, joinList(yqr.getYelpResult().getCategories(), categoriesDelimiter));
+                s.setString(3, name);
+                s.setString(4, address);
+                s.setString(5, city);
+                s.setString(6, state);
+                s.setString(7, joinList(categories, categoriesDelimiter));
 
                 s.addBatch();
             }

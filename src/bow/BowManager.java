@@ -26,9 +26,9 @@ import static yelp.YelpResult.categoriesDelimiter;
  */
 public class BowManager {
 
-    private static final String sfStoreFileName4Sq = "";
-    private static final String merchantFileName4Sq = "";
-    private static final String yelpBowFileName4Sq = "";
+    private static final String sfStoreFileName4Sq = "sfStoreFile.txt";
+    private static final String merchantFileName4Sq = "merchantFile.txt";
+    private static final String yelpBowFileName4Sq = "yelpBowFile.txt";
 
     private static final String bowDbUrl = "jdbc:mysql://sf-dev-amc-01.obisolution.com:1194";
     private static final String bowDbUserName = "joms.zacharia";
@@ -41,20 +41,22 @@ public class BowManager {
         new MerchantSelector(uniqueMerchantsToUpdate).process();
         new BowAccumulator().addBow(uniqueMerchantsToUpdate);
         write4sqFiles(uniqueMerchantsToUpdate);
-        updateDatabase(uniqueMerchantsToUpdate);
+        //updateDatabase(uniqueMerchantsToUpdate);
     }
 
     private void write4sqFiles(Map<String, MerchantDetails> uniqueMerchantsToUpdate) {
+        File sfStoreFile=null, merchantFile=null, yelpBowFile=null;
+        Writer sfStoreWriter=null, merchantWriter=null, yelpBowWriter=null;
         try {
-            File sfStoreFile = createFileIfNotExists(sfStoreFileName4Sq);
-            File merchantFile = createFileIfNotExists(merchantFileName4Sq);
-            File yelpBowFile = createFileIfNotExists(yelpBowFileName4Sq);
+            sfStoreFile = createFileIfNotExists(sfStoreFileName4Sq);
+            merchantFile = createFileIfNotExists(merchantFileName4Sq);
+            yelpBowFile = createFileIfNotExists(yelpBowFileName4Sq);
 
-            Writer sfStoreWriter = new BufferedWriter(new OutputStreamWriter(
+            sfStoreWriter = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(sfStoreFile), "utf-8"));
-            Writer merchantWriter = new BufferedWriter(new OutputStreamWriter(
+            merchantWriter = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(merchantFile), "utf-8"));
-            Writer yelpBowWriter = new BufferedWriter(new OutputStreamWriter(
+            yelpBowWriter = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(yelpBowFile), "utf-8"));
 
             for (String merchantId : uniqueMerchantsToUpdate.keySet()) {
@@ -70,7 +72,8 @@ public class BowManager {
                     String storeName = stringOr(s.getName(), "NULL");
                     String storeCity = stringOr(s.getCity(), "NULL");
                     String storeState = stringOr(s.getState(), "NULL");
-                    sfStoreWriter.write(merchantId + "\t" + merchantName + "\t" +
+                    String storeId = stringOr(s.getId(), "NULL");
+                    sfStoreWriter.write(merchantId + "\t" + storeId + "\t" + merchantName + "\t" +
                             storeName + "\t" + storeCity + "\t" + storeState);
 
                     sfStoreWriter.write("\n");
@@ -78,14 +81,27 @@ public class BowManager {
 
                 //yelpBow write
                 Bow bow = merchantDetails.getBow();
-                String yelpBow = bow.getYelp().toString();
-                String factualBow = bow.getFactual().toString();
+                String yelpBow = bow.getYelp()==null ? "[]" : bow.getYelp().toString();
+                String factualBow = bow.getFactual()==null ? "[]" : bow.getFactual().toString();
                 yelpBowWriter.write(merchantId + "\t" + yelpBow + "\t" + factualBow);
                 yelpBowWriter.write("\n");
             }
+            sfStoreWriter.flush();
+            merchantWriter.flush();
+            yelpBowWriter.flush();
         }
         catch (IOException e) {
             e.printStackTrace();
+        }
+        finally {
+            try {
+                if (sfStoreWriter!=null) sfStoreWriter.close();
+                if (merchantWriter!=null) merchantWriter.close();
+                if(yelpBowWriter!=null) yelpBowWriter.close();
+            }
+            catch (IOException e){
+                e.printStackTrace();
+            }
         }
     }
 

@@ -19,9 +19,12 @@ public class MerchantSelector {
     //      and get them as a whole), avoid duplicate code
     //TODO: Load these from a properties file
     //TODO: Temporary Hack having two connection info
-    private static final String storesDbUrl = "jdbc:mysql://sf-prod-tier4-01.obisolution.com:1194";
-    private static final String storesDbUserName = "joms";
-    private static final String storesDbPassword = "fhQyvyIDnfcrfeJmcX4mgaR";
+    //private static final String storesDbUrl = "jdbc:mysql://sf-prod-tier4-01.obisolution.com:1194";
+    private static final String storesDbUrl = "jdbc:mysql://sf-dev-amc-01.obisolution.com:1194";
+    //private static final String storesDbUserName = "joms";
+    private static final String storesDbUserName = "joms.zacharia";
+    //private static final String storesDbPassword = "";
+    private static final String storesDbPassword = "SF@1841b";
     private static final String storesDatabase = "smartfin";
     private static final String storesDriver = "com.mysql.jdbc.Driver";
 
@@ -92,12 +95,14 @@ public class MerchantSelector {
     public void addNStores() {
         StringBuilder getNStoresQuery = new StringBuilder();
         Set<String> merchantKeys = uniqueMerchantsToUpdate.keySet();
+        //System.out.println(merchantKeys.size());
         for (String s : merchantKeys)
-            getNStoresQuery.append("SELECT merchant_id, id, name, street_address, city, state " +
+            getNStoresQuery.append("SELECT merchant_id, id, name, address, city, state " +
                     "FROM smartfin.Store WHERE " +
-                    "active=1 AND merchant_id=" + s + "LIMIT " + storesPerMerchant + " UNION ALL ");
+                    "active=1 AND merchant_id=" + s + " LIMIT " + storesPerMerchant + " UNION ALL ");
 
         String q = getNStoresQuery.toString().substring(0, getNStoresQuery.length()-11);
+        System.out.println(q);
 
         Connection conn = new DBService(storesDbUserName, storesDbPassword, storesDbUrl, storesDatabase,
                 storesDriver).getConnection();
@@ -113,7 +118,7 @@ public class MerchantSelector {
             while (rs.next()) {
                 merchantId = rs.getString("merchant_id");
                 uniqueMerchantsToUpdate.get(merchantId).addStore(rs.getString("id"), rs.getString("name"),
-                        rs.getString("street_address"), rs.getString("city"), rs.getString("state"));
+                        rs.getString("address"), rs.getString("city"), rs.getString("state"));
             }
 
         } catch (SQLException e) {
@@ -125,6 +130,7 @@ public class MerchantSelector {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            closeConnection(conn);
         }
     }
 
@@ -132,5 +138,9 @@ public class MerchantSelector {
         removeProcessedMerchants();
         limitMerchants();
         addNStores();
+    }
+
+    public static void main(String[] args) {
+        new MerchantSelector(new TransactionLoader().loadTransactions()).process();
     }
 }

@@ -50,7 +50,8 @@ public class DBService {
 
     public static void closeConnection(Connection dbConnection) {
         try {
-            dbConnection.close();
+            if (dbConnection != null)
+                dbConnection.close();
         } catch (SQLException e1) {
             System.out.println("Could not close database connection");
             e1.printStackTrace();
@@ -103,6 +104,7 @@ public class DBService {
     public static String createInClause(Collection<String> items) {
         StringBuilder inClause = new StringBuilder("");
         for (String s : items) {
+            s = "\""+s+"\"";
             inClause.append(s);
             inClause.append(",");
         }

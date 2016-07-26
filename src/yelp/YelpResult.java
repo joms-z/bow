@@ -77,14 +77,22 @@ public class YelpResult {
 
     public List<String> preprocess() {
         List<String> categoryWords = new ArrayList<>();
-        for (String category : categories) {
-            String [] words = category.split("[,_/&]");
-            for (String word : words) {
-                if (!word.trim().equals(""))
-                    categoryWords.add(word.replace("'", "").replace("-", " ").toLowerCase().trim());
+        if (categories != null && categories.size()>0) {
+            for (String category : categories) {
+                String[] words = category.split("[,_/&]");
+                for (String word : words) {
+                    if (!word.trim().equals(""))
+                        categoryWords.add(word.replace("'", "").replace("-", " ").toLowerCase().trim());
+                }
             }
+            return categoryWords;
         }
-        return categoryWords;
+        return null;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
     }
 
     @Override

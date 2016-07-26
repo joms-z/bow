@@ -30,16 +30,16 @@ public class FactualManager {
 
     //TODO: Resource Management
     public static void loadStoreBow2FactualCatIdMapping() {
-        storeBow2FactualCatId = getJSONObjectFromFile("C:\\Users\\Joms\\Desktop\\store_bow_2_id.json");
+        storeBow2FactualCatId = getJSONObjectFromFile("C:\\Users\\Joms\\Desktop\\src\\data\\store_bow_2_id.json");
     }
 
     public static void loadFactualCatId2LabelsMapping() {
-        factualCatId2Labels = getJSONObjectFromFile("C:\\Users\\Joms\\Desktop\\factual_taxonomy_with_all.json");
+        factualCatId2Labels = getJSONObjectFromFile("C:\\Users\\Joms\\Desktop\\src\\data\\factual_taxonomy_with_all.json");
     }
 
     public static void loadMcpPatchMerchants() {
         mcpPatchMerchants = new HashSet<>();
-        String fileName = "C:\\Users\\Joms\\Desktop\\mcpPatchFactualBows_13KSubset.csv";
+        String fileName = "C:\\Users\\Joms\\Desktop\\src\\data\\mcpPatchBows_13KSubset.csv";
         String line;
         try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             br.readLine();

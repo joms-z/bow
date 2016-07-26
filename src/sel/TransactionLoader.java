@@ -23,7 +23,7 @@ public class TransactionLoader {
     private static final String database = "smartfin";
     private static final String driver = "com.mysql.jdbc.Driver";
     private static final String txTable = "TestRun";
-    private static final int tx_count = 25000;
+    private static final int tx_count = 20;
 
     private static int attempts = 0;
 
@@ -81,5 +81,9 @@ public class TransactionLoader {
             closeConnection(conn);
         }
         return uniqueMerchantsToUpdate;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new TransactionLoader().loadTransactions());
     }
 }
