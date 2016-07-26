@@ -19,7 +19,7 @@ public class TransactionLoader {
     //TODO: Load these from a properties file
     private static final String dbUrl = "jdbc:mysql://sf-prod-tier4-01.obisolution.com:1194";
     private static final String dbUserName = "joms";
-    private static final String dbPassword = "fhQyvyIDnfcrfeJmcX4mgaR";
+    private static final String dbPassword = "";
     private static final String database = "smartfin";
     private static final String driver = "com.mysql.jdbc.Driver";
     private static final String txTable = "TestRun";
