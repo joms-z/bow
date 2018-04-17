@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Created by Joms on 6/30/2016.
+ * Created by Joms on 3/20/2018.
  */
 public class StringUtils {
     public static boolean isField(String field) {
